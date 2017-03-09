@@ -4,7 +4,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.lsw.demo.PERMISSION"/>
 
+    <permission android:name="com.lsw.demo.PERMISSION"
+                android:protectionLevel="normal"/>
+    
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

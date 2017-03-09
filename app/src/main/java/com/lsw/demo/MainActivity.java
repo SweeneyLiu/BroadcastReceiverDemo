@@ -63,13 +63,15 @@ public class MainActivity extends AppCompatActivity {
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, intentFilter);
 
+        //发送有序广播
         Button button = (Button)findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent("com.lsw.test.mybroadcast");
-//                sendBroadcast(intent);
-                sendOrderedBroadcast(intent,null);
+                sendBroadcast(intent);
+//                MyReceiver myReceiver = new MyReceiver();
+//                sendOrderedBroadcast(intent,null,myReceiver,null,0,null,null);
             }
         });
 
