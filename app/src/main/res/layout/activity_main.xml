@@ -9,6 +9,19 @@
     android:orientation="vertical"
     tools:context="com.lsw.demo.MainActivity">
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送自定义广播"/>
+
+
+    <Button
+        android:id="@+id/local_receiver_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送本地广播"/>
+
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"

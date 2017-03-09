@@ -9,8 +9,11 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     private NetworkChangeReceiver networkChangeReceiver;
     private IntentFilter intentFilter;
+
+    private LocalBroadcastManager mLocalBroadcastManager;
+    private LocalBroadcastReceiver mLocalBroadcastReceiver;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -56,12 +62,38 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, intentFilter);
+
+        Button button = (Button)findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("com.lsw.test.mybroadcast");
+//                sendBroadcast(intent);
+                sendOrderedBroadcast(intent,null);
+            }
+        });
+
+        //发送本地广播
+        Button localButton = (Button)findViewById(R.id.local_receiver_button);
+        localButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =new Intent("com.lsw.test.localbroadcast");
+                mLocalBroadcastManager.sendBroadcast(intent);
+            }
+        });
+
+        mLocalBroadcastReceiver = new LocalBroadcastReceiver();
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter("com.lsw.test.localbroadcast");
+        mLocalBroadcastManager.registerReceiver(mLocalBroadcastReceiver,intentFilter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(networkChangeReceiver);
+        mLocalBroadcastManager.unregisterReceiver(mLocalBroadcastReceiver);
     }
 
     class NetworkChangeReceiver extends BroadcastReceiver{
@@ -76,6 +108,14 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(MainActivity.this, "network is not available", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    class LocalBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(MainActivity.this, "This is local receiver", Toast.LENGTH_SHORT).show();
         }
     }
 
