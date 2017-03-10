@@ -11,11 +11,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
     private LocalBroadcastManager mLocalBroadcastManager;
     private LocalBroadcastReceiver mLocalBroadcastReceiver;
+
+    private final static String m12 = "hh:mm";
+    private final static String m24 = "kk:mm";
+    private String mFormat;
+    private TextView textView;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -89,6 +97,15 @@ public class MainActivity extends AppCompatActivity {
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter("com.lsw.test.localbroadcast");
         mLocalBroadcastManager.registerReceiver(mLocalBroadcastReceiver,intentFilter);
+
+
+        //时间更新
+        textView = (TextView)findViewById(R.id.time_text);
+        IntentFilter filter=new IntentFilter();
+        filter.addAction(Intent.ACTION_TIME_TICK);
+        TimeReceiver timeReceiver =new TimeReceiver();
+        registerReceiver(timeReceiver,filter);
+
     }
 
     @Override
@@ -121,4 +138,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class TimeReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+             if (action.equals(Intent.ACTION_TIME_TICK)) {
+                 textView.setText(getTime());
+             }
+        }
+    }
+
+    private boolean get24HourMode()
+    {
+        return android.text.format.DateFormat.is24HourFormat(this);
+    }
+
+    private void setFormat()
+    {
+        if (get24HourMode())
+        {
+            mFormat = m24;
+        } else
+        {
+            mFormat = m12;
+        }
+    }
+
+    private String getTime(){
+        Calendar mCalendar = Calendar.getInstance();
+        setFormat();
+        mCalendar.setTimeInMillis(System.currentTimeMillis());
+        return (DateFormat.format(mFormat, mCalendar)).toString();
+    }
 }
